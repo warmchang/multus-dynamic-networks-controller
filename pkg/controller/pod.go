@@ -44,6 +44,25 @@ type DynamicAttachmentRequest struct {
 	PodNetNS        string
 }
 
+func (dar *DynamicAttachmentRequest) String() string {
+	return fmt.Sprintf(
+		"{PodName: %s; PodNamespace: %s; AttachmentNames: %s; Type: %s; PodNetNS: %s}",
+		dar.PodName,
+		dar.PodNamespace,
+		fmt.Sprintf("[%s]", strings.Join(dar.derefAttachments(), ", ")),
+		dar.Type,
+		dar.PodNetNS,
+	)
+}
+
+func (dar *DynamicAttachmentRequest) derefAttachments() []string {
+	var attachmentNames []string
+	for _, attachment := range dar.AttachmentNames {
+		attachmentNames = append(attachmentNames, attachment.Name)
+	}
+	return attachmentNames
+}
+
 // PodNetworksController handles the cncf networks annotations update, and
 // triggers adding / removing networks from a running pod.
 type PodNetworksController struct {

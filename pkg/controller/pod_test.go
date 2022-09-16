@@ -157,6 +157,28 @@ var _ = Describe("Dynamic Attachment controller", func() {
 	})
 })
 
+var _ = Describe("DynamicAttachmentRequest", func() {
+	It("an empty DynamicAttachmentRequest should present no information", func() {
+		dynamicAttachmentRequest := DynamicAttachmentRequest{}
+		Expect(dynamicAttachmentRequest.String()).To(
+			Equal("{PodName: ; PodNamespace: ; AttachmentNames: []; Type: ; PodNetNS: }"),
+		)
+	})
+	It("a full DynamicAttachmentRequest should present all information", func() {
+		dynamicAttachmentRequest := DynamicAttachmentRequest{
+			PodName:         "tiny-pod",
+			PodNamespace:    "ns1",
+			AttachmentNames: []*nad.NetworkSelectionElement{{Name: "attach1"}, {Name: "attach2"}},
+			Type:            "add",
+			PodNetNS:        "/path-to-ns",
+		}
+		Expect(dynamicAttachmentRequest.String()).To(
+			Equal(
+				"{PodName: tiny-pod; PodNamespace: ns1; AttachmentNames: [attach1, attach2]; Type: add; PodNetNS: /path-to-ns}"),
+		)
+	})
+})
+
 type dummyPodController struct {
 	*PodNetworksController
 	networkCache cache.Store
